@@ -1,21 +1,114 @@
-export default function Navbar() {
-    return (
-        <div>
-            <nav className="bg-gray-800">
-                <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-                    <div className="relative flex items-center justify-between h-16">
-                        <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-                            {/* Mobile menu button*/}
-                        </div>
-                        <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-                            <div className="flex-shrink-0">
-                                <h1 className="text-white text-lg font-bold">My Website</h1>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-        </div>
-    )
+"use client"
 
+import * as React from "react"
+import Link from "next/link"
+
+import { cn } from "@/lib/utils"
+
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu"
+
+const components: { title: string; href: string; }[] = [
+  {
+    title: "Patent",
+    href: "#",
+  },
+  {
+    title: "Trademark",
+    href: "#",
+  },
+  {
+    title: "Copyright",
+    href: "#",
+  },
+  {
+    title: "Industrial Design",
+    href: "#",
+  },
+  {
+    title: "Geographical Indications",
+    href: "#",
+  },
+  {
+    title: "Plant Variety Protection",
+    href: "#",
+  },
+]
+
+export function Navbar() {
+  return (
+    <NavigationMenu>
+      <NavigationMenuList>
+        <NavigationMenuItem>
+            <Link href="/" passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                Home
+                </NavigationMenuLink>
+            </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+            <Link href="/about" passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                About Us
+                </NavigationMenuLink>
+            </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuTrigger className={navigationMenuTriggerStyle()}>Services</NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+              {components.map((component) => (
+                <ListItem
+                  key={component.title}
+                  title={component.title}
+                  href={component.href}
+                >
+                </ListItem>
+              ))}
+            </ul>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <Link href="#" passHref>
+            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+              Contact Us
+            </NavigationMenuLink>
+          </Link>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
+  )
 }
+
+const ListItem = React.forwardRef<
+  React.ElementRef<"a">,
+  React.ComponentPropsWithoutRef<"a">
+>(({ className, title, children, ...props }, ref) => {
+  return (
+    <li>
+      <NavigationMenuLink asChild>
+        <a
+          ref={ref}
+          className={cn(
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+            className
+          )}
+          {...props}
+        >
+          <div className="text-sm font-medium leading-none">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
+        </a>
+      </NavigationMenuLink>
+    </li>
+  )
+})
+ListItem.displayName = "ListItem"
