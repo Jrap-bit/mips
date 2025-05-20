@@ -1,114 +1,98 @@
-"use client"
+"use client";
+import React, { useEffect, useState } from "react";
+import { HoveredLink, Menu, MenuItem, ProductItem } from "@/components/ui/navbar-menu";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
 
-import * as React from "react"
-import Link from "next/link"
+export function Navbar({ className }: { className?: string }) {
+  const [active, setActive] = useState<string | null>(null);
+  const [show, setShow] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
-import { cn } from "@/lib/utils"
+  useEffect(() => {
+    const handleScroll = () => {
+        const currentScrollY = window.scrollY;
 
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
+        if (currentScrollY > lastScrollY && currentScrollY > 100) {
+            setShow(false); // Scrolling down
+        }
+        else {
+            setShow(true); // Scrolling up
+        }
+        setLastScrollY(currentScrollY);
+    }
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+        window.removeEventListener("scroll", handleScroll);
+    }
+    }, [lastScrollY]);
 
-const components: { title: string; href: string; }[] = [
-  {
-    title: "Patent",
-    href: "#",
-  },
-  {
-    title: "Trademark",
-    href: "#",
-  },
-  {
-    title: "Copyright",
-    href: "#",
-  },
-  {
-    title: "Industrial Design",
-    href: "#",
-  },
-  {
-    title: "Geographical Indications",
-    href: "#",
-  },
-  {
-    title: "Plant Variety Protection",
-    href: "#",
-  },
-]
 
-export function Navbar() {
   return (
-    <NavigationMenu>
-      <NavigationMenuList>
-        <NavigationMenuItem>
-            <Link href="/" passHref>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                Home
-                </NavigationMenuLink>
-            </Link>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-            <Link href="/about" passHref>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                About Us
-                </NavigationMenuLink>
-            </Link>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger className={navigationMenuTriggerStyle()}>Services</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-              {components.map((component) => (
-                <ListItem
-                  key={component.title}
-                  title={component.title}
-                  href={component.href}
-                >
-                </ListItem>
-              ))}
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link href="#" passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Contact Us
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
-  )
+    <motion.div
+  animate={{ y: show ? 0 : -100 }}
+  transition={{ duration: 0.3, ease: "easeInOut" }}
+  className={cn(
+    "fixed top-0 left-0 w-full z-50 bg-white shadow-sm px-6 py-3",
+    className
+  )}
+>
+  <div className="max-w-7xl mx-auto flex items-center justify-between">
+    {/* Left: Logo */}
+    <div className="flex items-center">
+      <Image
+        src="/images/logo2.png"
+        alt="MIPS Logo"
+        width={180}
+        height={60}
+        className="object-contain"
+      />
+    </div>
+
+      <Menu setActive={setActive}>
+        <HoveredLink setActive={setActive} href="/"> 
+        Home   
+        </HoveredLink>
+        <HoveredLink setActive={setActive} href="/">
+            About Us
+        </HoveredLink>
+        <MenuItem setActive={setActive} active={active} item="Services">
+          <div className="  text-sm grid grid-cols-2 gap-10 p-4">
+            <ProductItem
+              title="Patent"
+              href="#"
+            />
+            <ProductItem
+              title="Trademarks"
+              href="#"
+            />
+            <ProductItem
+              title="Industrial Design"
+              href="#"
+            />
+            <ProductItem
+              title="Copyright"
+              href="#"
+            />
+                        <ProductItem
+              title="Geographic Indications"
+              href="#"
+            />
+                        <ProductItem
+              title="Plant Variety Protection"
+              href="#"
+            />
+          </div>
+        </MenuItem>
+        <HoveredLink setActive={setActive} href="/">
+            Team
+        </HoveredLink>
+                <HoveredLink setActive={setActive} href="/">
+            Contact Us
+        </HoveredLink>
+      </Menu>
+        </div>
+    </motion.div>
+  );
 }
-
-const ListItem = React.forwardRef<
-  React.ElementRef<"a">,
-  React.ComponentPropsWithoutRef<"a">
->(({ className, title, children, ...props }, ref) => {
-  return (
-    <li>
-      <NavigationMenuLink asChild>
-        <a
-          ref={ref}
-          className={cn(
-            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-            className
-          )}
-          {...props}
-        >
-          <div className="text-sm font-medium leading-none">{title}</div>
-          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-            {children}
-          </p>
-        </a>
-      </NavigationMenuLink>
-    </li>
-  )
-})
-ListItem.displayName = "ListItem"
